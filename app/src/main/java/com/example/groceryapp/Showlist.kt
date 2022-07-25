@@ -1,6 +1,7 @@
 package com.example.groceryapp
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -25,6 +26,7 @@ class Showlist : AppCompatActivity() {
     lateinit var framelayouts: FrameLayout
 
     lateinit var images: ImageView
+    lateinit var search:ImageView
     //lateinit var car:CardView
 
     private val TAG = "TAG"
@@ -36,8 +38,12 @@ class Showlist : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_list)
-
-        framelayouts = findViewById(R.id.frameLayout)
+search=findViewById(R.id.imageView5)
+        search.setOnClickListener{
+            val searc=Intent(this@Showlist,com.example.groceryapp.search::class.java)
+            startActivity(searc)
+        }
+        framelayouts = findViewById(R.id.framelayout)
 //car=findViewById(R.id.parentcard)
         images = findViewById(R.id.fr)
         images.setOnClickListener {
@@ -50,7 +56,7 @@ class Showlist : AppCompatActivity() {
 
         datalist = arrayListOf<listbasicinfo>()
         detailslist = arrayListOf<listdetails>()
-        recy = findViewById(R.id.recyclerview);
+        recy = findViewById(R.id.recyclerView);
 
 
 //val data= ArrayList<_root_ide_package_.com.example.groceryapp.DatabaseModel>()
@@ -74,7 +80,7 @@ class Showlist : AppCompatActivity() {
 
     fun onempty() {
         val fragmentTransaction = fragmentManager.beginTransaction()
-        fragmentTransaction.add(R.id.frameLayout, emptyfragment())
+        fragmentTransaction.add(R.id.framelayout, emptyfragment())
         fragmentTransaction.addToBackStack(null)
         fragmentTransaction.commit()
     }
@@ -89,7 +95,7 @@ class Showlist : AppCompatActivity() {
     fun add(view: View) {
 
         val fragmentTransaction = fragmentManager.beginTransaction()
-        fragmentTransaction.add(R.id.frameLayout, addelement2())
+        fragmentTransaction.add(R.id.framelayout, addelement2())
         fragmentTransaction.addToBackStack(null)
         fragmentTransaction.commit()
 
@@ -168,7 +174,7 @@ class Showlist : AppCompatActivity() {
 //                        Log.d(TAG, "onDataChange: ${
 //                            childSnapshot.value
 //                        }")
-val map:Map<String,listdetails>?= (childSnapshot.getValue() as Map<String, listdetails>?)!!
+//val map:Map<String,listdetails>?= (childSnapshot.getValue() as Map<String, listdetails>?)!!
                         val details = childSnapshot.getValue(listdetails::class.java)
                         detailslist.add(details!!)
 
@@ -182,7 +188,7 @@ val map:Map<String,listdetails>?= (childSnapshot.getValue() as Map<String, listd
 
 
                 }
-                adapt = adapter(this@Showlist, datalist, detailslist)
+                adapt = adapter(this@Showlist, datalist)
                 Log.d(TAG, "Object : ${
                     datalist.toString()
                 }")

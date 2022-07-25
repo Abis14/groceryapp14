@@ -27,6 +27,7 @@ RecyclerView.Adapter<childadapterlass.ViewHolder>() {
             holder.check.isChecked=true
         }
 holder.childcar.setCardBackgroundColor(Color.parseColor(color))
+        Log.d("check","child recycler view")
     }
 
     override fun getItemCount(): Int {

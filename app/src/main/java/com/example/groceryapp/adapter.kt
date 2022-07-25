@@ -17,8 +17,8 @@ import com.google.gson.Gson
 
 class adapter(
     var c: android.content.Context,
-    private var dataSet: ArrayList<listbasicinfo>,
-    private var list: ArrayList<listdetails>
+    private var dataSet: ArrayList<listbasicinfo>
+//    private var list: ArrayList<listdetails>
 ) :
     RecyclerView.Adapter<adapter.ViewHolder>() {
 
@@ -63,7 +63,7 @@ class adapter(
         holder.rec.adapter = child
         holder.rec.setHasFixedSize(true)
         i++;
-        Log.d("sizelis", list.size.toString())
+
         Log.d("sizelist", i.toString())
         if(dataSet!=null)
 holder.parentcard.setCardBackgroundColor(Color.parseColor(dataSet[position].color).toInt())

@@ -5,19 +5,31 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import java.util.ArrayList
+
 import java.util.HashMap
+import kotlin.collections.ArrayList
 
 class grocerylistparentadapter(var dataset: HashMap<String, ArrayList<listdetails>>,var listbasicinfo: listbasicinfo): RecyclerView.Adapter<grocerylistparentadapter.ViewHolder>() {
-    class ViewHolder(view:View): RecyclerView.ViewHolder(view) {
+    class ViewHolder(val view:View): RecyclerView.ViewHolder(view) {
 val title:TextView
 val childrecy:RecyclerView
-init {
+var isselected:Boolean=false
+
+        var list:ArrayList<String> = ArrayList()
+
+        init {
     title=view.findViewById(R.id.textView6)
     childrecy=view.findViewById(R.id.grocerylistchildrec)
+    view.setOnClickListener {
+isselected=true
+        //list.add()
+
+    }
 }
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
