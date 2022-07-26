@@ -1,5 +1,8 @@
 package com.example.groceryapp
 
+import android.app.Activity
+import android.content.Context
+import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -12,19 +15,23 @@ import androidx.recyclerview.widget.RecyclerView
 import java.util.HashMap
 import kotlin.collections.ArrayList
 
-class grocerylistparentadapter(var dataset: HashMap<String, ArrayList<listdetails>>,var listbasicinfo: listbasicinfo): RecyclerView.Adapter<grocerylistparentadapter.ViewHolder>() {
+class grocerylistparentadapter(var dataset: HashMap<String, ArrayList<listdetails>>,var listbasicinfo: listbasicinfo,var Adapter:Adaptercallback,var c:Context): RecyclerView.Adapter<grocerylistparentadapter.ViewHolder>() {
+    var isselected:Boolean=false
+    var counters:Int=0
+    var selecteditem:ArrayList<String> = ArrayList()
+    lateinit var childadapter: gocerylistchildadapter
     class ViewHolder(val view:View): RecyclerView.ViewHolder(view) {
 val title:TextView
 val childrecy:RecyclerView
-var isselected:Boolean=false
 
-        var list:ArrayList<String> = ArrayList()
+
+        //var list:ArrayList<String> = ArrayList()
 
         init {
     title=view.findViewById(R.id.textView6)
     childrecy=view.findViewById(R.id.grocerylistchildrec)
     view.setOnClickListener {
-isselected=true
+
         //list.add()
 
     }
@@ -56,8 +63,8 @@ if(key[position].toString()=="Done")
         if(it.value.done=="true") {
             dataset.get("Done")?.add(it.value)
             holder.title.text = key[position].toString()
-            var childadapter: gocerylistchildadapter =
-                gocerylistchildadapter(dataset.getValue(key[position]), listbasicinfo.title!!)
+             childadapter =
+                gocerylistchildadapter(dataset.getValue(key[position]), listbasicinfo.title!!, Adapter)
             holder.childrecy.adapter = childadapter
             holder.childrecy.layoutManager =
                 LinearLayoutManager(holder.childrecy.context, LinearLayoutManager.VERTICAL, false)
@@ -67,17 +74,70 @@ if(key[position].toString()=="Done")
 }
         else {
     holder.title.text = key[position].toString()
-    var childadapter: gocerylistchildadapter =
-        gocerylistchildadapter(dataset.getValue(key[position]), listbasicinfo.title!!)
+    childadapter =
+        gocerylistchildadapter(dataset.getValue(key[position]), listbasicinfo.title!!,Adapter)
     holder.childrecy.adapter = childadapter
     holder.childrecy.layoutManager =
         LinearLayoutManager(holder.childrecy.context, LinearLayoutManager.VERTICAL, false)
 }
+holder.title.setOnLongClickListener {
+    if(isselected==true)
+    {
+        if(selecteditem.contains(key[position])) {
+            selecteditem.remove(key[position])
+            counters--
+            holder.title.setBackgroundColor(Color.parseColor("#ffffff"))
+            //counter(counters)
+Adapter.onchange(-1)
+        }
+        else
+        {
+            selecteditem.add(key[position])
+            counters++
+            Adapter.onchange(1)
+            holder.title.setBackgroundColor(Color.parseColor("#FFFFF7"))
+        }
 
+
+    }
+    else
+    {
+        isselected=true
+        counters++
+        Adapter.onchange(1)
+        holder.title.setBackgroundColor(Color.parseColor("#FFFFF7"))
+        selecteditem.add(key[position])
+
+
+        //counter(counters)
+//        val grocerylist:grocerylist= c as grocerylist
+//        grocerylist.supportActionBar?.title= counters.toString()
+//        grocerylist.  supportActionBar?.setDisplayShowTitleEnabled(false)
+
+    }
+
+    true
+}
         }
 
 
     override fun getItemCount(): Int {
    return dataset.size
     }
+    fun getlistchild():ArrayList<String>
+    {
+        return childadapter.getlist()
+    }
+    fun getparentlist():ArrayList<String>
+    {
+        return selecteditem
+    }
+    public interface Adaptercallback
+    {
+        public fun onchange(count:Int)
+        public fun oncancel(title:String,color:String)
+    }
+
+
+
 }

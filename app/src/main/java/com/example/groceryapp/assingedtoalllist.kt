@@ -81,9 +81,9 @@ myMap.put(it.value.category.toString(),java.util.ArrayList())
         data.add(listdetails)
         myMap.put("Done",java.util.ArrayList())
 
-
-        adapter=grocerylistparentadapter(myMap,listdetails)
-            rey.adapter=adapter
+//
+//        adapter=grocerylistparentadapter(myMap,listdetails)
+//            rey.adapter=adapter
         rey.layoutManager=LinearLayoutManager(activity,LinearLayoutManager.VERTICAL,false)
         return view
 

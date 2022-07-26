@@ -4,12 +4,15 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/2ndmouseventure/Desktop/groceryapp/app/src/main/res/drawable/border.xml" value="0.2875" />
+        <entry key="..\:/Users/2ndmouseventure/Desktop/groceryapp/app/src/main/res/drawable/circle.xml" value="0.1" />
         <entry key="..\:/Users/2ndmouseventure/Desktop/groceryapp/app/src/main/res/drawable/circlepink.xml" value="0.1435" />
         <entry key="..\:/Users/2ndmouseventure/Desktop/groceryapp/app/src/main/res/drawable/round.xml" value="0.2875" />
+        <entry key="..\:/Users/2ndmouseventure/Desktop/groceryapp/app/src/main/res/drawable/roundbutton.xml" value="0.25" />
         <entry key="..\:/Users/2ndmouseventure/Desktop/groceryapp/app/src/main/res/drawable/rounded.xml" value="0.2875" />
+        <entry key="..\:/Users/2ndmouseventure/Desktop/groceryapp/app/src/main/res/drawable/selectbutton.xml" value="0.187" />
         <entry key="..\:/Users/2ndmouseventure/Desktop/groceryapp/app/src/main/res/layout/actionbar.xml" value="0.67" />
         <entry key="..\:/Users/2ndmouseventure/Desktop/groceryapp/app/src/main/res/layout/activity_addelement.xml" value="0.175" />
-        <entry key="..\:/Users/2ndmouseventure/Desktop/groceryapp/app/src/main/res/layout/activity_grocerylist.xml" value="0.17760416666666667" />
+        <entry key="..\:/Users/2ndmouseventure/Desktop/groceryapp/app/src/main/res/layout/activity_grocerylist.xml" value="0.23310810810810811" />
         <entry key="..\:/Users/2ndmouseventure/Desktop/groceryapp/app/src/main/res/layout/activity_list.xml" value="0.175" />
         <entry key="..\:/Users/2ndmouseventure/Desktop/groceryapp/app/src/main/res/layout/activity_listadd.xml" value="0.271286231884058" />
         <entry key="..\:/Users/2ndmouseventure/Desktop/groceryapp/app/src/main/res/layout/activity_main.xml" value="0.175" />
@@ -33,6 +36,7 @@
         <entry key="..\:/Users/2ndmouseventure/Desktop/groceryapp/app/src/main/res/layout/searchcard.xml" value="0.2694746376811594" />
         <entry key="..\:/Users/2ndmouseventure/Desktop/groceryapp/app/src/main/res/layout/searchchildcard.xml" value="0.2694746376811594" />
         <entry key="..\:/Users/2ndmouseventure/Desktop/groceryapp/app/src/main/res/layout/searchmenu.xml" value="0.27574468085106385" />
+        <entry key="..\:/Users/2ndmouseventure/Desktop/groceryapp/app/src/main/res/menu/custommenu.xml" value="0.17395833333333333" />
         <entry key="..\:/Users/Abis/Desktop/groceryapp/app/src/main/res/drawable/circle.xml" value="0.1" />
         <entry key="..\:/Users/Abis/Desktop/groceryapp/app/src/main/res/drawable/circlepink.xml" value="0.1" />
         <entry key="..\:/Users/Abis/Desktop/groceryapp/app/src/main/res/drawable/round.xml" value="0.1" />
