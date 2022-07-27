@@ -1,5 +1,6 @@
 package com.example.groceryapp
 
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -10,8 +11,10 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Spinner
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import java.time.LocalDateTime
 
 
 /**
@@ -34,6 +37,7 @@ lateinit var ref:DatabaseReference
 lateinit var auth:FirebaseAuth
 lateinit var title:String
 lateinit var categorym:listdetails
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -50,7 +54,7 @@ lateinit var categorym:listdetails
         item=view.findViewById(R.id.itemdetails)
         val bundle=arguments
         title=bundle!!.getString("title").toString()
-
+Log.d("title",title.toString())
 
         categorylist.add("Uncategorized")
         categorylist.add("Diary")
@@ -70,25 +74,34 @@ lateinit var categorym:listdetails
             val user=auth.currentUser?.uid
             var idy:String=""
             var id:String=""
-            ref=FirebaseDatabase.getInstance().getReference("Users").child(user!!)
+var member=member(FirebaseAuth.getInstance().uid.toString(),"Admin",LocalDateTime.now().toString())
+            FirebaseDatabase.getInstance().getReference("grocerylist").child("listbasicinfo").orderByChild("title").equalTo(title)
 
-            ref.child("listbasicinfo").orderByChild("title").equalTo(title)
                 .get()
                 .addOnCompleteListener {
                     if (it.isSuccessful) {
 
                         it.result.children.forEach { children ->
-
+                            Log.d("succes","sucessy")
                              id = children.key.toString()
 
                             Log.d("TAG", "onCreateView: $id of child")
+                            FirebaseDatabase.getInstance().getReference("grocerylist")
+                                .child("listbasicinfo").child(id).child("members").push().updateChildren(member.toMap()).addOnSuccessListener {
+                                    Toast.makeText(activity, "List details has been saved", Toast.LENGTH_SHORT).show()
+                                }
 
-                            FirebaseDatabase.getInstance().getReference("Users").child(user!!)
+                            FirebaseDatabase.getInstance().getReference("grocerylist")
                                 .child("listbasicinfo").child(id).child("listdetails").push().updateChildren(listdetails.toMap()).addOnSuccessListener {
                                     Toast.makeText(activity, "List details has been saved", Toast.LENGTH_SHORT).show()
                                 }
                         }
                     }
+                    else {
+                        Log.d("error", "error")
+                    }
+                }.addOnFailureListener {
+                    Log.d("exception",it.toString())
                 }
 
             /*val id = ref.child("listbasicinfo").orderByChild("title").equalTo("hh").addValueEventListener(object:ValueEventListener

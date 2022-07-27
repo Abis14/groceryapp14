@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.getValue
+import com.google.firebase.ktx.Firebase
 import kotlin.collections.ArrayList
 
 class Showlist : AppCompatActivity() {
@@ -107,101 +108,69 @@ search=findViewById(R.id.imageView5)
         var id: String = ""
         val data2: String = ""
         val listdetails:listdetails=listdetails()
+Log.d("profile",FirebaseAuth.getInstance().currentUser?.photoUrl.toString())
 
-        database =
-            FirebaseDatabase.getInstance().getReference("Users").child(uid!!).child("listbasicinfo")
+        FirebaseDatabase.getInstance().getReference("grocerylist").child("listbasicinfo")
 
-        database.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                if (snapshot.exists()) {
-                    data = true
-                    for (item in snapshot.children) {
-                        val data = item.getValue(listbasicinfo::class.java)
+            .get()
+            .addOnCompleteListener {
+                if(it.isSuccessful)
+                {
+                    it.result.children.forEach { children->
+                        Log.d("key",children.key.toString())
 
-                        datalist.add(data!!)
+                        children.child("members").children.forEach { member ->
+                            if(member.child("uid").value.toString()==FirebaseAuth.getInstance().uid.toString())
+                            {
+                                id=children.key.toString()
+                                Log.d("uid",id)
+                            }
 
-                        Log.d(TAG, "onDataChange: ${
-                            data.listdetails
-                        }")
+                            Log.d("key", member.child("uid").value.toString())
+
+                        }
+                    }
+                }
+            }
 
 
-//                        var i=data2.childrenCount
-//                            Log.d("child",i.toString())
+//        database = FirebaseDatabase.getInstance().getReference("Users").child()
+//            .child("listbasicinfo")//.child("listdetails")
+//        database.addListenerForSingleValueEvent(object : ValueEventListener {
+//            override fun onDataChange(snapshot: DataSnapshot) {
+//                for (data in snapshot.children) {
 //
-//                        if(i>0) {
-//                            i--
-//                            if (item.child("listdetails").exists()) {
-//                                for (item2 in data2.children) {
+//                    data.child("listdetails").children.forEach { childSnapshot ->
+////                        Log.d(TAG, "onDataChange: ${
+////                            childSnapshot.value
+////                        }")
+////val map:Map<String,listdetails>?= (childSnapshot.getValue() as Map<String, listdetails>?)!!
+//                        val details = childSnapshot.getValue(listdetails::class.java)
+//                        detailslist.add(details!!)
 //
 //
-//                                    val details = item2.getValue(listdetails::class.java)
-//                                    i--
-//                                    detailslist.add(details!!)
-//                                    Log.d("Tag", i.toString())
-//
-//
-//                                }
-//                            }
-//                        }
-//                         else {
-//                            Toast.makeText(this@Showlist, "no child", Toast.LENGTH_SHORT).show()
-//                        }
 //                    }
-                    }
-
-                    //car.setCardBackgroundColor("#FFFFFFF)
-                }
-
-            }//rehman.abdul5666@gmail.com
-//adapt=adapter(this@Showlist,datalist)
-//                    recy.adapter=adapt
-//                    recy.layoutManager = GridLayoutManager(applicationContext, 2);
-//                    recy.setHasFixedSize(true)
-
-
-            override fun onCancelled(error: DatabaseError) {
-
-            }
-
-        })
-        database = FirebaseDatabase.getInstance().getReference("Users").child(uid)
-            .child("listbasicinfo")//.child("listdetails")
-        database.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                for (data in snapshot.children) {
-
-                    data.child("listdetails").children.forEach { childSnapshot ->
-//                        Log.d(TAG, "onDataChange: ${
-//                            childSnapshot.value
-//                        }")
-//val map:Map<String,listdetails>?= (childSnapshot.getValue() as Map<String, listdetails>?)!!
-                        val details = childSnapshot.getValue(listdetails::class.java)
-                        detailslist.add(details!!)
-
-
-
-                    }
-
-
-//                                 val details = data.child("listdetails").child(data.key.toString()).getValue(listdetails::class.java)
-//                                 detailslist.add(details!!)
-
-
-                }
-                adapt = adapter(this@Showlist, datalist)
-                Log.d(TAG, "Object : ${
-                    datalist.toString()
-                }")
-                recy.adapter = adapt
-                recy.layoutManager = GridLayoutManager(applicationContext, 2);
-                recy.setHasFixedSize(true)
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
-            }
-
-        })
+//
+//
+////                                 val details = data.child("listdetails").child(data.key.toString()).getValue(listdetails::class.java)
+////                                 detailslist.add(details!!)
+//
+//
+//                }
+//                adapt = adapter(this@Showlist, datalist)
+//                Log.d(TAG, "Object : ${
+//                    datalist.toString()
+//                }")
+//                recy.adapter = adapt
+//                recy.layoutManager = GridLayoutManager(applicationContext, 2);
+//                recy.setHasFixedSize(true)
+//            }
+//
+//            override fun onCancelled(error: DatabaseError) {
+//
+//            }
+//
+//        })
 
 //            database.addValueEventListener(object :ValueEventListener
 //            {

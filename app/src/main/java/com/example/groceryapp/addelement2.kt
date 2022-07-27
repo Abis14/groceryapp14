@@ -93,7 +93,7 @@ class addelement2 : Fragment() {
 
 //            val desc=description.text.toString().trim()
             //use cananetation when taking data from user
-            ref = FirebaseDatabase.getInstance().getReference("Users").child(user!!)
+            ref=FirebaseDatabase.getInstance().getReference("grocerylist")
             val id = ref.push().child("listbasicinfo").key!!
             ref.child(id).push().updateChildren(
                 listinfo.toMap()

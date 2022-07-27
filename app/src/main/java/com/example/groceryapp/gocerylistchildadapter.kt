@@ -37,88 +37,95 @@ class gocerylistchildadapter(var dataset: ArrayList<listdetails>,var title:Strin
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val ids: String = ""
 
-        holder.text.text = dataset[position].Itemdetails
-        if(dataset[position].done=="true")
-        {
-            holder.check.isChecked=true
-        }
-        holder.check.setOnClickListener {
-            if (holder.check.isChecked) {
+            var ids: String = ""
 
-                databaseoperation(holder,position)
-            }
-
-        }
-        holder.text.setOnLongClickListener {
-            if(isselected==true)
+            holder.text.text = dataset[position].Itemdetails
+            if(dataset[position].done=="true")
             {
-                if(selectedlist.contains(holder.text.text))
-                {
-                    selectedlist.remove(holder.text.text)
+                holder.check.isChecked=true
+            }
+            holder.check.setOnClickListener {
+                if (holder.check.isChecked) {
+                    Log.d("checked","its checked")
 
-                    holder.text.setBackgroundColor(Color.parseColor("#FFFFFF"))
-                    inter.onchange(-1)
+                    var ref = FirebaseDatabase.getInstance().getReference("Users")
+                        .child(FirebaseAuth.getInstance().uid.toString())
+
+                    ref.child("listbasicinfo").orderByChild("title").equalTo(title)
+                        .get()
+                        .addOnCompleteListener {
+                            if (it.isSuccessful) {
+
+                                it.result.children.forEach { children ->
+
+                                    ids = children.key.toString()
+                                    Log.d("ids",ids)
+
+                                }
+                            }
+                        }
+                    Log.d("run",dataset[position].category.toString())
+                    ref=FirebaseDatabase.getInstance().getReference("Users")
+                        .child(FirebaseAuth.getInstance().uid.toString())
+                    ref.child("listbasicinfo")
+                        .child(ids).child("listdetails").orderByChild("category")
+                        .equalTo(dataset[position].category).get().addOnCompleteListener {
+                            if(it.isSuccessful) {
+                                it.result.children.forEach { children ->
+                                    val id = children.key.toString()
+                                    Log.d("ids", id)
+                                    FirebaseDatabase.getInstance().getReference("Users")
+                                        .child(FirebaseAuth.getInstance().uid.toString())
+                                        .child("listbasicinfo").child(ids).child("listdetails")
+                                        .child(id).child("done").setValue("true")
+
+
+                                }
+                            }
+                            else
+                            {
+                                Log.d("failed","failes")
+                            }
+
+
+                        }
+                }
+
+            }
+            holder.text.setOnLongClickListener {
+                if(isselected==true)
+                {
+                    if(selectedlist.contains(holder.text.text))
+                    {
+                        selectedlist.remove(holder.text.text)
+
+                        holder.text.setBackgroundColor(Color.parseColor("#FFFFFF"))
+                        inter.onchange(-1)
+                    }
+                    else
+                    {
+                        selectedlist.add(holder.text.text.toString())
+                        counter++
+                        holder.text.setBackgroundColor(Color.parseColor("#FFFFF7"))
+                        inter.onchange(1)
+                    }
                 }
                 else
                 {
-                    selectedlist.add(holder.text.text.toString())
+                    isselected=true
                     counter++
-                    holder.text.setBackgroundColor(Color.parseColor("#FFFFF7"))
                     inter.onchange(1)
+                    selectedlist.add(dataset[position].Itemdetails!!)
+                    holder.text.setBackgroundColor(Color.parseColor("#FFFFF7"))
+
+
                 }
+                true
             }
-            else
-            {
-                isselected=true
-                counter++
-                inter.onchange(1)
-                selectedlist.add(dataset[position].Itemdetails!!)
-                holder.text.setBackgroundColor(Color.parseColor("#FFFFF7"))
-
-
-            }
-            true
         }
-    }
-    fun databaseoperation(holder: ViewHolder,  position: Int)
-    {
-        var ids:String=""
-        var ref = FirebaseDatabase.getInstance().getReference("Users")
-            .child(FirebaseAuth.getInstance().uid.toString())
-
-        ref.child("listbasicinfo").orderByChild("title").equalTo(title)
-            .get()
-            .addOnCompleteListener {
-                if (it.isSuccessful) {
-
-                    it.result.children.forEach { children ->
-
-                        ids = children.key.toString()
 
 
-                    }
-                }
-            }
-        var refs = FirebaseDatabase.getInstance().getReference("Users")
-            .child(FirebaseAuth.getInstance().uid.toString()).child("listbasicinfo")
-            .child(ids).child("listdetails").orderByChild("category")
-            .equalTo(dataset[position].category).get().addOnCompleteListener {
-                it.result.children.forEach { children ->
-                    val id = children.key.toString()
-                    Log.d("ids", id)
-                    FirebaseDatabase.getInstance().getReference("Users")
-                        .child(FirebaseAuth.getInstance().uid.toString())
-                        .child("listbasicinfo").child(ids).child("listdetails").child(id).child("done").setValue("true")
-
-
-                }
-
-
-            }
-
-    }
         override fun getItemCount(): Int {
             return dataset.size
         }

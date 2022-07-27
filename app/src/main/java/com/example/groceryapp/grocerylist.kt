@@ -19,6 +19,7 @@ class grocerylist : AppCompatActivity(),grocerylistparentadapter.Adaptercallback
     lateinit var Assingedtoall: Button
     var lists: String? = null
     var counters: Int = 0
+    var ids:String=""
     lateinit var img: ImageView
     lateinit var cancel: ImageView
     lateinit var title: TextView
@@ -53,6 +54,8 @@ class grocerylist : AppCompatActivity(),grocerylistparentadapter.Adaptercallback
         delete = findViewById(R.id.delete)
         delete.setOnClickListener {
             deleteoperation()
+            finish()
+            startActivity(intent)
 
         }
         listdetails = gson.fromJson(list, listbasicinfo::class.java)
@@ -60,6 +63,18 @@ class grocerylist : AppCompatActivity(),grocerylistparentadapter.Adaptercallback
 //        toolbar.setBackgroundColor(Color.parseColor(listdetails.color))
 //        supportActionBar?.setDisplayShowTitleEnabled(false)
         setSupportActionBar(toolbar)
+        databaseref = FirebaseDatabase.getInstance().getReference("Users")
+            .child(FirebaseAuth.getInstance().uid.toString())
+        databaseref.child("listbasicinfo").orderByChild("title")
+            .equalTo(listdetails.title.toString()).get().addOnCompleteListener {
+                if (it.isSuccessful) {
+                    it.result.children.forEach { children ->
+                        ids = children.key.toString()
+                        Log.d("parent", ids.toString())
+                    }
+                }
+
+            }
         listdetails.listdetails?.forEach {
 
 
@@ -112,19 +127,21 @@ class grocerylist : AppCompatActivity(),grocerylistparentadapter.Adaptercallback
     override fun onchange(count: Int) {
         toolbar.setBackgroundColor(Color.parseColor("#ffffff"))
         setSupportActionBar(toolbar)
+        title.visibility=View.VISIBLE
         cancel.visibility = View.VISIBLE
         supportActionBar?.title = ""
         delete.visibility = View.VISIBLE
         counters += count
-        title.text = counters.toString()
+        title.text = "$counters.toString() itemSelected"
 
-        img.setImageResource(R.drawable.delete)
+
 
     }
 
     override fun oncancel(titles: String, color: String) {
         toolbar.setBackgroundColor(Color.parseColor(color))
         setSupportActionBar(toolbar)
+        counters=0
         cancel.visibility = View.VISIBLE
         supportActionBar?.title = titles
         img.setImageResource(R.drawable.share)
@@ -136,53 +153,86 @@ class grocerylist : AppCompatActivity(),grocerylistparentadapter.Adaptercallback
     }
 
     fun deleteoperation() {
-        var id: String = ""
+
         var itemlist: ArrayList<String> = adapter.getlistchild()
 
         var categorylist: ArrayList<String> = adapter.getparentlist()
 
-        databaseref = FirebaseDatabase.getInstance().getReference("Users")
-            .child(FirebaseAuth.getInstance().uid.toString())
-        databaseref.child("listbasicinfo").orderByChild("title")
-            .equalTo(listdetails.title.toString()).get().addOnCompleteListener {
-            if (it.isSuccessful) {
-                it.result.children.forEach { children ->
-                    id = children.key.toString()
-                    Log.d("parent", id.toString())
-                }
+
+        var childid: String = ""
+
+
+        if (categorylist.size != 0) {
+            for (item in categorylist) {
+                databaseref = FirebaseDatabase.getInstance().getReference("Users")
+                    .child(FirebaseAuth.getInstance().uid.toString())
+                databaseref.child("listbasicinfo")
+                    .child(ids).child("listdetails").orderByChild("category")
+                    .equalTo(item).get().addOnCompleteListener {
+                        if (it.isSuccessful) {
+                            it.result.children.forEach { children ->
+                                val cid = children.key.toString()
+                                Log.d("ids", cid)
+                                FirebaseDatabase.getInstance().getReference("Users")
+                                    .child(FirebaseAuth.getInstance().uid.toString())
+                                    .child("listbasicinfo").child(ids).child("listdetails")
+                                    .child(cid).addValueEventListener(object : ValueEventListener {
+                                        override fun onDataChange(snapshot: DataSnapshot) {
+                                            for (item in snapshot.children) {
+                                                item.ref.removeValue()
+                                            }
+                                        }
+
+                                        override fun onCancelled(error: DatabaseError) {
+                                            TODO("Not yet implemented")
+                                        }
+
+                                    })
+
+
+                            }
+                        } else {
+                            Log.d("failed", "failes")
+                        }
+
+
+                    }
             }
 
         }
-        var childid: String = ""
-        for (item in categorylist) {
-            Log.d("category", item.toString())
-            val refs = FirebaseDatabase.getInstance().getReference("Users")
-                .child(FirebaseAuth.getInstance().uid.toString()).child("listbasicinfo")
-                .child(id).child("listdetails").orderByChild("category")
-                .equalTo(item).get().addOnCompleteListener {
-                    it.result.children.forEach { children ->
-                        val id = children.key.toString()
-                        Log.d("ids", id)
+
+        for (item in itemlist) {
+            Log.d("itemlist",itemlist.size.toString())
+            databaseref = FirebaseDatabase.getInstance().getReference("Users")
+                .child(FirebaseAuth.getInstance().uid.toString())
+            databaseref.child("listbasicinfo").child(ids).child("listdetails")
+                .orderByChild("Itemdetails").equalTo(item).get().addOnCompleteListener {
+                    if (it.isSuccessful) {
+
+                        it.result.children.forEach { children ->
+                            val itemid = children.key.toString()
+                            Log.d("itemid",itemid)
+                            FirebaseDatabase.getInstance().getReference("Users")
+                                .child(FirebaseAuth.getInstance().uid.toString())
+                                .child("listbasicinfo")
+                                .child(ids).child("listdetails").child(itemid)
+                                .addValueEventListener(object : ValueEventListener {
+                                    override fun onDataChange(snapshot: DataSnapshot) {
+                                        for (data in snapshot.children) {
+                                            data.ref.removeValue()
+                                        }
+                                    }
+
+                                    override fun onCancelled(error: DatabaseError) {
+                                        TODO("Not yet implemented")
+                                    }
+
+                                })
+                        }
                     }
-                    val ref = FirebaseDatabase.getInstance().getReference("Users")
-                        .child(FirebaseAuth.getInstance().uid.toString()).child("listbasicinfo")
-                        .child(id).child("listdetails")
-                        .child(childid).addListenerForSingleValueEvent(object : ValueEventListener {
-                            override fun onDataChange(snapshot: DataSnapshot) {
-                                for (data in snapshot.children) {
-                                    data.ref.removeValue()
-                                }
-                            }
-
-                            override fun onCancelled(error: DatabaseError) {
-                                TODO("Not yet implemented")
-                            }
-
-
-                        })
                 }
         }
 
-
     }
+
 }

@@ -65,8 +65,8 @@ class adapter(
         i++;
 
         Log.d("sizelist", i.toString())
-        if(dataSet!=null)
-holder.parentcard.setCardBackgroundColor(Color.parseColor(dataSet[position].color).toInt())
+//        if(dataSet!=null)
+//holder.parentcard.setCardBackgroundColor(Color.parseColor(dataSet[position].color).toInt())
 
 
 
