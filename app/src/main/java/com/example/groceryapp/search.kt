@@ -37,43 +37,95 @@ class search : AppCompatActivity() {
             val word = text.text
 
 
-            database = FirebaseDatabase.getInstance().getReference("Users")
-                .child(FirebaseAuth.getInstance().uid.toString()).child("listbasicinfo")
-            database.orderByChild("title").equalTo(word.toString()).addValueEventListener(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    if (snapshot.exists()) {
+            FirebaseDatabase.getInstance().getReference("grocerylist")
+                .child("listbasicinfo").get().addOnCompleteListener {
+                    if (it.isSuccessful) {
+                        it.result.children.forEach { children ->
+                            if (children.child("title").value == word.toString()) {
+                                children.child("members").children.forEach { childrend ->
+                                    if (childrend.child("uid").value.toString() == FirebaseAuth.getInstance().uid) {
+                                        val id = children.key.toString()
+                                        Log.d("sid", id)
+                                        FirebaseDatabase.getInstance().getReference("grocerylist")
+                                            .child("listbasicinfo").child(id)
+                                            .addValueEventListener(object : ValueEventListener {
 
-                        for (item in snapshot.children) {
-                            val data = item.getValue(listbasicinfo::class.java)
-                            mylist.add(data!!)
-                            Log.d("found", "data found")
-                            adapt = searchpadapter(this@search, mylist)
+                                                override fun onDataChange(snapshot: DataSnapshot) {
 
-                            rec.adapter = adapt
-                            rec.layoutManager = GridLayoutManager(applicationContext, 2);
-                            rec.setHasFixedSize(true)
+                                                    if (snapshot.exists()) {
+                                                        Log.d("founded", "foundeddd")
+
+                                                        val founded =
+                                                            snapshot.getValue(listbasicinfo::class.java)
+                                                        mylist.add(founded!!)
+                                                        adapt = searchpadapter(this@search, mylist)
+//
+                                                        rec.adapter = adapt
+                                                        rec.layoutManager =
+                                                            GridLayoutManager(
+                                                                applicationContext,
+                                                                2
+                                                            );
+                                                        rec.setHasFixedSize(true)
+
+                                                    } else {
+                                                        Log.d("snap", snapshot.value.toString())
+                                                    }
+                                                }
+//
 
 
+                                                override fun onCancelled(error: DatabaseError) {
+                                                    TODO("Not yet implemented")
+                                                }
+
+                                            })
+
+                                    }
+
+                                }
+                            }
                         }
 
-                    } else {
-                        Log.d("fails", "failesssss")
+
                     }
-
                 }
+            //.child("listbasicinfo")
+//            database.orderByChild("title").equalTo(word.toString()).addValueEventListener(object : ValueEventListener {
+//                override fun onDataChange(snapshot: DataSnapshot) {
+//                    if (snapshot.exists()) {
+//
+//                        for (item in snapshot.children) {
+//                            val data = item.getValue(listbasicinfo::class.java)
+//                            mylist.add(data!!)
+//                            Log.d("found", "data found")
+//                            adapt = searchpadapter(this@search, mylist)
+//
+//                            rec.adapter = adapt
+//                            rec.layoutManager = GridLayoutManager(applicationContext, 2);
+//                            rec.setHasFixedSize(true)
+//
+//
+//                        }
+//
+//                    } else {
+//                        Log.d("fails", "failesssss")
+//                    }
+//
+//                }
+//
+//                override fun onCancelled(error: DatabaseError) {
+//                    TODO("Not yet implemented")
+//                }
+//            })
+//        }
+//
+//
 
-                override fun onCancelled(error: DatabaseError) {
-                    TODO("Not yet implemented")
-                }
-            })
+
         }
-
-
-
-
-
     }
-    }
+}
 
 
 

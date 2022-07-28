@@ -17,8 +17,8 @@ import com.google.gson.Gson
 
 class adapter(
     var c: android.content.Context,
-    private var dataSet: ArrayList<listbasicinfo>
-//    private var list: ArrayList<listdetails>
+    private var dataSet: ArrayList<listbasicinfo>,
+  // private var list: ArrayList<listdetails>
 ) :
     RecyclerView.Adapter<adapter.ViewHolder>() {
 

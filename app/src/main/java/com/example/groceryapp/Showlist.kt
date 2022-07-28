@@ -51,13 +51,14 @@ search=findViewById(R.id.imageView5)
             loadfragment()
 
         }
+        datalist = arrayListOf<listbasicinfo>()
+        detailslist = arrayListOf<listdetails>()
+        recy = findViewById(R.id.recyclerView);
         getdatas()
 
 
 
-        datalist = arrayListOf<listbasicinfo>()
-        detailslist = arrayListOf<listdetails>()
-        recy = findViewById(R.id.recyclerView);
+
 
 
 //val data= ArrayList<_root_ide_package_.com.example.groceryapp.DatabaseModel>()
@@ -108,6 +109,7 @@ search=findViewById(R.id.imageView5)
         var id: String = ""
         val data2: String = ""
         val listdetails:listdetails=listdetails()
+        datalist=ArrayList()
 Log.d("profile",FirebaseAuth.getInstance().currentUser?.photoUrl.toString())
 
         FirebaseDatabase.getInstance().getReference("grocerylist").child("listbasicinfo")
@@ -123,7 +125,48 @@ Log.d("profile",FirebaseAuth.getInstance().currentUser?.photoUrl.toString())
                             if(member.child("uid").value.toString()==FirebaseAuth.getInstance().uid.toString())
                             {
                                 id=children.key.toString()
-                                Log.d("uid",id)
+                                Log.d("testing",id)
+                               FirebaseDatabase.getInstance().getReference("grocerylist").child("listbasicinfo").child(id).addValueEventListener(object:ValueEventListener
+                                {
+                                    override fun onDataChange(snapshot: DataSnapshot) {
+                                        if(snapshot.exists())
+                                        {
+                                          val data2=snapshot.getValue(listbasicinfo::class.java)
+
+                                           datalist.add(data2!!)
+
+                                            if(snapshot.hasChildren())
+                                            {
+                                                for(item in snapshot.child("listdetails").children)
+                                                {
+                                                    val data=item.getValue(listdetails::class.java)
+                                                    detailslist.add(data!!)
+                                                }
+                                                Log.d("testing",detailslist.toString())
+                                            }
+                                            else
+                                            {
+                                                Log.d("testing","o child")
+                                            }
+                                        }
+                                        else
+                                        {
+                                            Log.d("error","error")
+                                        }
+                                        adapt= adapter(this@Showlist,datalist)
+                                        recy.adapter=adapt
+                                        recy.layoutManager=GridLayoutManager(applicationContext,2)
+                                        //recy.setHasFixedSize(true)
+
+                                    }
+
+
+                                    override fun onCancelled(error: DatabaseError) {
+                                        TODO("Not yet implemented")
+                                    }
+
+                                })
+
                             }
 
                             Log.d("key", member.child("uid").value.toString())
@@ -134,69 +177,9 @@ Log.d("profile",FirebaseAuth.getInstance().currentUser?.photoUrl.toString())
             }
 
 
-//        database = FirebaseDatabase.getInstance().getReference("Users").child()
-//            .child("listbasicinfo")//.child("listdetails")
-//        database.addListenerForSingleValueEvent(object : ValueEventListener {
-//            override fun onDataChange(snapshot: DataSnapshot) {
-//                for (data in snapshot.children) {
-//
-//                    data.child("listdetails").children.forEach { childSnapshot ->
-////                        Log.d(TAG, "onDataChange: ${
-////                            childSnapshot.value
-////                        }")
-////val map:Map<String,listdetails>?= (childSnapshot.getValue() as Map<String, listdetails>?)!!
-//                        val details = childSnapshot.getValue(listdetails::class.java)
-//                        detailslist.add(details!!)
-//
-//
-//                    }
-//
-//
-////                                 val details = data.child("listdetails").child(data.key.toString()).getValue(listdetails::class.java)
-////                                 detailslist.add(details!!)
-//
-//
-//                }
-//                adapt = adapter(this@Showlist, datalist)
-//                Log.d(TAG, "Object : ${
-//                    datalist.toString()
-//                }")
-//                recy.adapter = adapt
-//                recy.layoutManager = GridLayoutManager(applicationContext, 2);
-//                recy.setHasFixedSize(true)
-//            }
-//
-//            override fun onCancelled(error: DatabaseError) {
-//
-//            }
-//
-//        })
 
-//            database.addValueEventListener(object :ValueEventListener
-//            {
-//                override fun onDataChange(snapshot: DataSnapshot) {
-//                    if(snapshot.exists()) {
-//                        Toast.makeText(this@Showlist, "data exist", Toast.LENGTH_SHORT).show()
-//                        for (data in snapshot.children)
-//                        {
-//
-//                                 val details = data.getValue(listdetails::class.java)
-//                                 detailslist.add(details!!)
-//
-//
-//
-//                        }
-//
-//                    }
-//
-//                }
-//
-//                override fun onCancelled(error: DatabaseError) {
-//                    TODO("Not yet implemented")
-//                }
-//
-//
-//            })            }
+
+
 
 
     }

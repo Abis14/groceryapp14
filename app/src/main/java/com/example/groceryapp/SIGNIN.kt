@@ -1,6 +1,7 @@
 package com.example.groceryapp
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -21,6 +22,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.ktx.Firebase
+import java.net.URL
 
 
 class SIGNIN : AppCompatActivity() {
@@ -98,18 +100,40 @@ class SIGNIN : AppCompatActivity() {
 
     fun saveuserdata() {
 
-
+var exist:Int=0
+        var name:String=""
+        var email:String=""
+        var id:String=""
+var img: String? =null
         database = FirebaseDatabase.getInstance()
         dref = database.getReference("Users")
         val user = Firebase.auth.currentUser
+
         user?.let {
             for (profile in it.providerData) {
-                val name = auth.currentUser?.displayName
-                val email = auth.currentUser?.email
-                val id = auth.currentUser?.uid
+                name = auth.currentUser?.displayName.toString()
+                email = auth.currentUser?.email.toString()
+                id = auth.currentUser?.uid.toString()
+                img= auth.currentUser?.photoUrl.toString()
+            }
+            FirebaseDatabase.getInstance().getReference("Users").get().addOnCompleteListener {
+                if(it.isSuccessful)
+                {
+                    it.result.children.forEach { children->
 
-                val uses = user(name, email, id)
-                val uid = dref.push().key!!
+                        if( children.child("Email").value==email) {
+                            exist++
+
+
+                        }
+
+                    }
+                }
+            }
+            val uses = user(name, email, id,img!!)
+            val uid = dref.push().key!!
+            if (exist==0) {
+                Log.d("inside",exist.toString())
                 dref.child(uid).updateChildren(uses.toMap()).addOnSuccessListener {
                     Toast.makeText(this, "Suceesfully registered", Toast.LENGTH_SHORT).show()
                 }.addOnFailureListener {
@@ -117,6 +141,9 @@ class SIGNIN : AppCompatActivity() {
                 }
 
             }
+        }
+
+
 //        }
 // name=auth.currentUser?.displayName
 //         email=auth.currentUser?.email
@@ -125,9 +152,9 @@ class SIGNIN : AppCompatActivity() {
 //        val uses=user(name, email,id,pic)
 //
 
+
         }
     }
-}
 
 
 

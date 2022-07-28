@@ -1,13 +1,16 @@
 package com.example.groceryapp
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.provider.ContactsContract
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 
@@ -27,6 +30,7 @@ class icondisplay : Fragment() {
 lateinit var setting:ImageView
 lateinit var share:ImageView
 lateinit var delete:ImageView
+    var deletes:Boolean=false
 var title:String=""
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,17 +42,65 @@ var title:String=""
         share=view.findViewById(R.id.astext)
         var bundle=arguments
         title=bundle?.getString("title").toString()
-        delete=view.findViewById(R.id.delete)
+        delete=view.findViewById(R.id.deletelist)
+
         setting.setOnClickListener {
             val setting=Intent(activity,com.example.groceryapp.setting::class.java)
             startActivity(setting)
 
         }
         delete.setOnClickListener {
-            FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().uid.toString()).child("listbasicinfo").orderByChild("title").equalTo(title)
+            dialog()
+            if (deletes == true) {
+                FirebaseDatabase.getInstance().getReference("grocerylist").child("listbasicinfo")
+                    .get().addOnCompleteListener {
+                    if (it.isSuccessful) {
+                        it.result.children.forEach { children ->
+                            children.child("members").children.forEach { childrend ->
+                                if (childrend.child("uid").value == FirebaseAuth.getInstance().uid.toString()) {
+                                    if (childrend.child("role").value == "Admin") {
+                                        if (children.child("title").value == title) {
+                                            val id = children.key.toString()
+                                            FirebaseDatabase.getInstance()
+                                                .getReference("grocerylist")
+                                                .child("listbasicinfo").child(id).removeValue()
+                                        } else {
+                                            Log.d("care", title)
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Toast.makeText(activity, "Sorry you are not Admin", Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+                }//.child("listbasicinfo").orderByChild("title").equalTo(title)
+            }
+            else
+            {
+
+            }
         }
+
         return view
     }
+fun dialog()
+{
+    val alertDialog=AlertDialog.Builder(activity)
+    alertDialog.setMessage("Are you sure you want to delete this list" +
+            "all member invited to this list " +
+            "will loose acces to it")
+    alertDialog.setPositiveButton("Yes"){dialogInterface, which ->
+        deletes=true
+    }
+    alertDialog.setNegativeButton("No"){dialogInterface,which->
+        deletes=false
+    }
+    alertDialog.show()
 
+}
 
 }

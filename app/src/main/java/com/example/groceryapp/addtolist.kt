@@ -86,10 +86,10 @@ var member=member(FirebaseAuth.getInstance().uid.toString(),"Admin",LocalDateTim
                              id = children.key.toString()
 
                             Log.d("TAG", "onCreateView: $id of child")
-                            FirebaseDatabase.getInstance().getReference("grocerylist")
-                                .child("listbasicinfo").child(id).child("members").push().updateChildren(member.toMap()).addOnSuccessListener {
-                                    Toast.makeText(activity, "List details has been saved", Toast.LENGTH_SHORT).show()
-                                }
+//                            FirebaseDatabase.getInstance().getReference("grocerylist")
+//                                .child("listbasicinfo").child(id).child("members").push().updateChildren(member.toMap()).addOnSuccessListener {
+//                                    Toast.makeText(activity, "List details has been saved", Toast.LENGTH_SHORT).show()
+//                                }
 
                             FirebaseDatabase.getInstance().getReference("grocerylist")
                                 .child("listbasicinfo").child(id).child("listdetails").push().updateChildren(listdetails.toMap()).addOnSuccessListener {

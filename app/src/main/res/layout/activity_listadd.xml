@@ -10,11 +10,11 @@
 
     <Button
         android:id="@+id/plus"
-        android:layout_width="178dp"
-        android:layout_height="71dp"
+        android:layout_width="97dp"
+        android:layout_height="75dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="24dp"
-        android:background="@drawable/round"
+        android:background="@drawable/circlebutton"
         android:backgroundTint="@color/purple_700"
         android:text="+"
         android:textColor="@color/white"
@@ -35,8 +35,13 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:id="@+id/constraintLayout"
+        android:layout_width="405dp"
+        android:layout_height="56dp"
+        android:layout_marginEnd="1dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:id="@+id/textView11"
@@ -44,51 +49,54 @@
             android:layout_height="41dp"
             android:layout_marginStart="37dp"
             android:layout_marginTop="8dp"
-            android:text="TextView"
+            android:textSize="20sp"
+            android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageView
-            android:id="@+id/imageView6"
-            android:layout_width="34dp"
-            android:layout_height="33dp"
-            android:layout_marginStart="138dp"
-            android:layout_marginTop="13dp"
-            app:layout_constraintStart_toEndOf="@+id/textView11"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/shareicon" />
+        <TextView
+            android:id="@+id/textView13"
+            android:layout_width="32dp"
+            android:layout_height="29dp"
+            android:layout_marginStart="92dp"
+            android:layout_marginBottom="11dp"
+            android:background="@drawable/shareicon"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/textView11" />
 
-        <ImageView
-            android:id="@+id/imageView12"
-            android:layout_width="27dp"
-            android:layout_height="34dp"
-            android:layout_marginStart="31dp"
-            android:layout_marginTop="12dp"
-            android:layout_marginEnd="5dp"
+        <TextView
+            android:id="@+id/textView15"
+            android:layout_width="31dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="54dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="31dp"
+            android:background="@drawable/icon"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/imageView6"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/icon" />
+            app:layout_constraintHorizontal_bias="0.6"
+            app:layout_constraintStart_toEndOf="@+id/textView13"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <FrameLayout
-            android:id="@+id/icondisplay"
-            android:layout_width="125dp"
-            android:layout_height="148dp"
-            android:layout_marginTop="14dp"
-            android:layout_marginEnd="2dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imageView6">
-
-        </FrameLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <FrameLayout
         android:id="@+id/details"
-        android:layout_width="408dp"
-        android:layout_height="640dp"
+        android:layout_width="405dp"
+        android:layout_height="487dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/icondisplay"
+        android:layout_width="176dp"
+        android:layout_height="149dp"
+        android:layout_marginTop="1dp"
+        android:layout_marginEnd="3dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout">
 
     </FrameLayout>
 

@@ -14,8 +14,8 @@ class listadd : AppCompatActivity() {
     lateinit var mfragment:addtolist
     //lateinit var empty:frame
     lateinit var titletext:TextView
-    lateinit var shareimage:ImageView
-    lateinit var icon:ImageView
+    lateinit var shareimage:TextView
+    lateinit var icon:TextView
     lateinit var toolbar:Toolbar
     lateinit var icondisplay: icondisplay
     private val fragmentManager = supportFragmentManager
@@ -29,16 +29,18 @@ toolbar=findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
 supportActionBar?.title=""
         titletext=findViewById(R.id.textView11)
-        shareimage=findViewById(R.id.imageView6)
+        shareimage=findViewById(R.id.textView13)
         shareimage.setOnClickListener {
-
+val intents=Intent(this,share::class.java)
+            startActivity(intents)
         }
-        icon=findViewById(R.id.imageView12)
+        icon=findViewById(R.id.textView15)
         icon.setOnClickListener {
             val fragmentTransaction=fragmentManager.beginTransaction()
             fragmentTransaction.replace(R.id.icondisplay,icondisplay)
             val bundle=Bundle()
             bundle.putString("title",titles)
+            icondisplay.arguments=bundle
             fragmentTransaction.addToBackStack(null)
             fragmentTransaction.commit()
 

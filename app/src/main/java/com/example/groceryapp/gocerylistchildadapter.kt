@@ -49,50 +49,73 @@ class gocerylistchildadapter(var dataset: ArrayList<listdetails>,var title:Strin
                 if (holder.check.isChecked) {
                     Log.d("checked","its checked")
 
-                    var ref = FirebaseDatabase.getInstance().getReference("Users")
-                        .child(FirebaseAuth.getInstance().uid.toString())
+                    var ref = FirebaseDatabase.getInstance().getReference("grocerylist")
+                        .child("listbasicinfo").get().addOnCompleteListener {
 
-                    ref.child("listbasicinfo").orderByChild("title").equalTo(title)
-                        .get()
-                        .addOnCompleteListener {
-                            if (it.isSuccessful) {
-
-                                it.result.children.forEach { children ->
-
-                                    ids = children.key.toString()
-                                    Log.d("ids",ids)
-
-                                }
-                            }
-                        }
-                    Log.d("run",dataset[position].category.toString())
-                    ref=FirebaseDatabase.getInstance().getReference("Users")
-                        .child(FirebaseAuth.getInstance().uid.toString())
-                    ref.child("listbasicinfo")
-                        .child(ids).child("listdetails").orderByChild("category")
-                        .equalTo(dataset[position].category).get().addOnCompleteListener {
-                            if(it.isSuccessful) {
-                                it.result.children.forEach { children ->
-                                    val id = children.key.toString()
-                                    Log.d("ids", id)
-                                    FirebaseDatabase.getInstance().getReference("Users")
-                                        .child(FirebaseAuth.getInstance().uid.toString())
-                                        .child("listbasicinfo").child(ids).child("listdetails")
-                                        .child(id).child("done").setValue("true")
-
-
-                                }
-                            }
-                            else
+                            if(it.isSuccessful)
                             {
-                                Log.d("failed","failes")
+
+                                it.result.children.forEach { children->
+                                    val ids=children.key.toString()
+                                    Log.d("checkk", ids)
+                                    if(children.child("title").value==title) {
+                                        children.child("listdetails").children.forEach { category ->
+                                            if (category.child("category").value == dataset[position].category&&category.child("Itemdetails").value==dataset[position].Itemdetails.toString()) {
+                                                val id = category.key.toString()
+                                                Log.d("checkk", id)
+                                                FirebaseDatabase.getInstance().getReference("grocerylist").child("listbasicinfo").child(ids).child("listdetails").child(id).child("done").setValue("true")
+                                            }
+
+                                        }
+
+                                    }
+
+                                    }
+                                }
                             }
-
-
                         }
+//
+//                    ref.child("listbasicinfo").orderByChild("title").equalTo(title)
+//                        .get()
+//                        .addOnCompleteListener {
+//                            if (it.isSuccessful) {
+//
+//                                it.result.children.forEach { children ->
+//
+//                                    ids = children.key.toString()
+//                                    Log.d("ids",ids)
+//
+//                                }
+//                            }
+//                        }
+//                    Log.d("run",dataset[position].category.toString())
+//                    ref=FirebaseDatabase.getInstance().getReference("Users")
+//                        .child(FirebaseAuth.getInstance().uid.toString())
+//                    ref.child("listbasicinfo")
+//                        .child(ids).child("listdetails").orderByChild("category")
+//                        .equalTo(dataset[position].category).get().addOnCompleteListener {
+//                            if(it.isSuccessful) {
+//                                it.result.children.forEach { children ->
+//                                    val id = children.key.toString()
+//                                    Log.d("ids", id)
+//                                    FirebaseDatabase.getInstance().getReference("Users")
+//                                        .child(FirebaseAuth.getInstance().uid.toString())
+//                                        .child("listbasicinfo").child(ids).child("listdetails")
+//                                        .child(id).child("done").setValue("true")
+//
+//
+//                                }
+//                            }
+//                            else
+//                            {
+//                                Log.d("failed","failes")
+//                            }
+//
+//
+//                        }
                 }
 
-            }
+
             holder.text.setOnLongClickListener {
                 if(isselected==true)
                 {

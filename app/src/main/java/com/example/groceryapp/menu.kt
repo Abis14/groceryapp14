@@ -40,9 +40,9 @@ rateapp=view.findViewById(R.id.imageView9)
         shareapp=view.findViewById(R.id.imageView10)
         logout=view.findViewById(R.id.imageView11)
         logout.setOnClickListener{
-//            val auth:FirebaseAuth
-//            auth=FirebaseAuth.getInstance()
-//            Firebase.auth.signOut()
+  val auth:FirebaseAuth
+          auth=FirebaseAuth.getInstance()
+           Firebase.auth.signOut()
 //            val intent=Intent(activity,SIGNIN::class.java)
             val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
@@ -50,8 +50,12 @@ rateapp=view.findViewById(R.id.imageView9)
                 .build()
             val mgoogle:GoogleSignInClient=GoogleSignIn.getClient(requireActivity(),gso)
             mgoogle.signOut().addOnCompleteListener {
+            mgoogle.revokeAccess().addOnCompleteListener {
                 val intent= Intent(activity, SIGNIN::class.java)
                 startActivity(intent)
+                activity?.finish()
+
+            }
 
             }
         }

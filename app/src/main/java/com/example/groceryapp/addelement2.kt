@@ -1,7 +1,9 @@
 package com.example.groceryapp
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -10,10 +12,12 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.cardview.widget.CardView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import java.time.LocalDateTime
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -37,6 +41,7 @@ class addelement2 : Fragment() {
     lateinit var auth: FirebaseAuth
 
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -90,16 +95,26 @@ class addelement2 : Fragment() {
             var Title = titles.text.toString().trim()
             val listinfo: listbasicinfo2 = listbasicinfo2(Title, color,)
             val user = auth.currentUser?.uid
-
+val member=member(FirebaseAuth.getInstance().uid.toString(),"Admin",LocalDateTime.now().toString())
 //            val desc=description.text.toString().trim()
             //use cananetation when taking data from user
             ref=FirebaseDatabase.getInstance().getReference("grocerylist")
             val id = ref.push().child("listbasicinfo").key!!
             ref.child(id).push().updateChildren(
-                listinfo.toMap()
-            ).addOnSuccessListener {
+                listinfo.toMap()).addOnSuccessListener {
                 Toast.makeText(activity, "hell", Toast.LENGTH_SHORT).show()
             }
+            FirebaseDatabase.getInstance().getReference("grocerylist").child("listbasicinfo").orderByChild("title").equalTo(Title).get().addOnCompleteListener {
+                if(it.isSuccessful)
+                {
+                    it.result.children.forEach { children->
+                      val id=children.key.toString()
+                        FirebaseDatabase.getInstance().getReference("grocerylist").child("listbasicinfo").child(id).child("members").push().updateChildren(member.toMap())
+
+                    }
+                }
+            }
+
             var intent = Intent(activity, listadd::class.java)
 
            intent.putExtra("data", Title)

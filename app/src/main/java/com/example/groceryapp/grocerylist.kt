@@ -54,8 +54,7 @@ class grocerylist : AppCompatActivity(),grocerylistparentadapter.Adaptercallback
         delete = findViewById(R.id.delete)
         delete.setOnClickListener {
             deleteoperation()
-            finish()
-            startActivity(intent)
+
 
         }
         listdetails = gson.fromJson(list, listbasicinfo::class.java)
@@ -63,9 +62,9 @@ class grocerylist : AppCompatActivity(),grocerylistparentadapter.Adaptercallback
 //        toolbar.setBackgroundColor(Color.parseColor(listdetails.color))
 //        supportActionBar?.setDisplayShowTitleEnabled(false)
         setSupportActionBar(toolbar)
-        databaseref = FirebaseDatabase.getInstance().getReference("Users")
-            .child(FirebaseAuth.getInstance().uid.toString())
-        databaseref.child("listbasicinfo").orderByChild("title")
+        databaseref = FirebaseDatabase.getInstance().getReference("grocerylist")
+            .child("listbasicinfo")
+        databaseref.orderByChild("title")
             .equalTo(listdetails.title.toString()).get().addOnCompleteListener {
                 if (it.isSuccessful) {
                     it.result.children.forEach { children ->
@@ -164,17 +163,17 @@ class grocerylist : AppCompatActivity(),grocerylistparentadapter.Adaptercallback
 
         if (categorylist.size != 0) {
             for (item in categorylist) {
-                databaseref = FirebaseDatabase.getInstance().getReference("Users")
-                    .child(FirebaseAuth.getInstance().uid.toString())
-                databaseref.child("listbasicinfo")
+                databaseref = FirebaseDatabase.getInstance().getReference("grocerylist")
+                    .child("listbasicinfo")
+                databaseref
                     .child(ids).child("listdetails").orderByChild("category")
                     .equalTo(item).get().addOnCompleteListener {
                         if (it.isSuccessful) {
                             it.result.children.forEach { children ->
                                 val cid = children.key.toString()
                                 Log.d("ids", cid)
-                                FirebaseDatabase.getInstance().getReference("Users")
-                                    .child(FirebaseAuth.getInstance().uid.toString())
+                                FirebaseDatabase.getInstance().getReference("grocerylist")
+
                                     .child("listbasicinfo").child(ids).child("listdetails")
                                     .child(cid).addValueEventListener(object : ValueEventListener {
                                         override fun onDataChange(snapshot: DataSnapshot) {
@@ -203,17 +202,18 @@ class grocerylist : AppCompatActivity(),grocerylistparentadapter.Adaptercallback
 
         for (item in itemlist) {
             Log.d("itemlist",itemlist.size.toString())
-            databaseref = FirebaseDatabase.getInstance().getReference("Users")
-                .child(FirebaseAuth.getInstance().uid.toString())
-            databaseref.child("listbasicinfo").child(ids).child("listdetails")
-                .orderByChild("Itemdetails").equalTo(item).get().addOnCompleteListener {
+            databaseref = FirebaseDatabase.getInstance().getReference("grocerylist")
+                .child("listbasicinfo")
+            databaseref
+                .child(ids).child("listdetails").orderByChild("Itemdetails")
+                .equalTo(item).get().addOnCompleteListener {
                     if (it.isSuccessful) {
 
                         it.result.children.forEach { children ->
                             val itemid = children.key.toString()
                             Log.d("itemid",itemid)
-                            FirebaseDatabase.getInstance().getReference("Users")
-                                .child(FirebaseAuth.getInstance().uid.toString())
+                            FirebaseDatabase.getInstance().getReference("grocerylist")
+
                                 .child("listbasicinfo")
                                 .child(ids).child("listdetails").child(itemid)
                                 .addValueEventListener(object : ValueEventListener {
