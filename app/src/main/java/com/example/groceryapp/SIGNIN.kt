@@ -1,5 +1,6 @@
 package com.example.groceryapp
 
+import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -61,9 +62,12 @@ class SIGNIN : AppCompatActivity() {
                 saveuserdata()
 
                 val intent = Intent(this, Showlist::class.java)
+                intent.putExtra("data","reg")
                 startActivity(intent)
                 finish()
-
+val result:Intent=Intent()
+                setResult(Activity.RESULT_OK)
+                finish()
 
             }
         }
@@ -116,10 +120,20 @@ var img: String? =null
                 id = auth.currentUser?.uid.toString()
                 img= auth.currentUser?.photoUrl.toString()
             }
-            FirebaseDatabase.getInstance().getReference("Users").get().addOnCompleteListener {
+            FirebaseDatabase.getInstance().getReference("Users").child(auth.uid.toString()).get().addOnCompleteListener {
                 if(it.isSuccessful)
                 {
-                    it.result.children.forEach { children->
+                    if (!it.result.exists()) {
+
+                        val uses = user(name, email, id,img!!)
+
+                        dref.child(auth.uid.toString()).updateChildren(uses.toMap()).addOnSuccessListener {
+                            Toast.makeText(this, "Suceesfully registered", Toast.LENGTH_SHORT).show()
+                        }.addOnFailureListener {
+                            Toast.makeText(this, "Sorry try again", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                    /*it.result.children.forEach { children->
 
                         if( children.child("Email").value==email) {
                             exist++
@@ -127,20 +141,20 @@ var img: String? =null
 
                         }
 
-                    }
+                    }*/
                 }
             }
-            val uses = user(name, email, id,img!!)
-            val uid = dref.push().key!!
-            if (exist==0) {
+//            val uses = user(name, email, id,img!!)
+            //val uid = dref.push().key!!
+            /*if (exist==0) {
                 Log.d("inside",exist.toString())
-                dref.child(uid).updateChildren(uses.toMap()).addOnSuccessListener {
+                dref.child(auth.uid.toString()).updateChildren(uses.toMap()).addOnSuccessListener {
                     Toast.makeText(this, "Suceesfully registered", Toast.LENGTH_SHORT).show()
                 }.addOnFailureListener {
                     Toast.makeText(this, "Sorry try again", Toast.LENGTH_SHORT).show()
                 }
 
-            }
+            }*/
         }
 
 

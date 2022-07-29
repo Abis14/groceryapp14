@@ -14,6 +14,7 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import kotlinx.android.synthetic.main.fragment_addtolist.*
 import java.time.LocalDateTime
 
 
@@ -36,6 +37,7 @@ lateinit var assignlist:ArrayList<String>
 lateinit var ref:DatabaseReference
 lateinit var auth:FirebaseAuth
 lateinit var title:String
+lateinit var imges:ArrayList<Any>
 lateinit var categorym:listdetails
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(
@@ -48,8 +50,8 @@ lateinit var categorym:listdetails
      spin=view.findViewById(R.id.spinner2)
         spin2=view.findViewById(R.id.spinner)
         assignlist= ArrayList()
-        assignlist.add("Assingedtoall")
-        assignlist.add("Assigntoabis")
+//        assignlist.add("Assingedtoall")
+     //assignlist.add("Assigntoabis")
         categorylist= ArrayList()
         item=view.findViewById(R.id.itemdetails)
         val bundle=arguments
@@ -149,17 +151,55 @@ var member=member(FirebaseAuth.getInstance().uid.toString(),"Admin",LocalDateTim
 
         }
         pic= ArrayList()
-        pic.add(R.drawable.fruit)
-        pic.add(R.drawable.veg)
-        pic.add(R.drawable.drink)
-        pic.add((R.drawable.ic_launcher_background))
-        pic.add(R.drawable.veg)
-        spinnerad=spinneradapter(categorylist,pic)
-        spin.adapter=spinnerad
-        spin2ad=spinneradapter(assignlist,pic)
-        spin2.adapter=spin2ad
+   pic.add(R.drawable.fruit)
+  pic.add(R.drawable.veg)
+    pic.add(R.drawable.drink)
+    pic.add((R.drawable.ic_launcher_background))
+      pic.add(R.drawable.veg)
+
+
+        imges= ArrayList()
+        gettingmemberlist()
+        Log.d("before",imges.size.toString())
+
+
         return view
+    }
+    fun gettingmemberlist()
+    {
+        FirebaseDatabase.getInstance().getReference("grocerylist").child("listbasicinfo").orderByChild("title").equalTo(title).get().addOnCompleteListener {
+            if(it.isSuccessful) {
+                it.result.children.forEach {children->
+if(children.child("title").value==title)
+{
+
+
+                    FirebaseDatabase.getInstance().getReference("Users").addValueEventListener(object:ValueEventListener{
+                        override fun onDataChange(snapshot: DataSnapshot) {
+                            for (item in snapshot.children) {
+                                if (item.child("uid").value == children.child("uid").value) {
+                                    assignlist.add(item.child("Name").value.toString())
+                                        imges.add((item.child("img").value.toString()))
+                                    spin2ad=spinneradapter(requireActivity(),assignlist,imges)
+
+                                    spin2.adapter=spin2ad
+                                    Log.d("pics",pic.toString())
+
+                                }
+                            }
+                        }
+
+                        override fun onCancelled(error: DatabaseError) {
+                            TODO("Not yet implemented")
+                        }
+
+                    })
+                }
+            }
+        }
+}
     }
 
 
-}
+    }
+

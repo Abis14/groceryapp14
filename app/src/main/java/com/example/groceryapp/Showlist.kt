@@ -1,18 +1,27 @@
 package com.example.groceryapp
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Intent
+import android.net.Uri
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.*
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.getValue
+import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
+import com.google.firebase.dynamiclinks.PendingDynamicLinkData
 import com.google.firebase.ktx.Firebase
+import java.time.LocalDateTime
 import kotlin.collections.ArrayList
 
 class Showlist : AppCompatActivity() {
@@ -27,21 +36,48 @@ class Showlist : AppCompatActivity() {
     lateinit var framelayouts: FrameLayout
 
     lateinit var images: ImageView
-    lateinit var search:ImageView
+    lateinit var search: ImageView
+    var code:String=""
+
     //lateinit var car:CardView
-
+    var linkdata: Boolean = false
     private val TAG = "TAG"
+    private val args by lazy {
 
+    }
 
     private val fragmentManager = supportFragmentManager
 
+    @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("RestrictedApi")
+//    var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+//        if (result.resultCode == Activity.RESULT_OK) {
+//            // There are no request codes
+//            val data: Intent? = result.data
+//            handlingdynamiclink()
+//        }
+//    }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_list)
-search=findViewById(R.id.imageView5)
-        search.setOnClickListener{
-            val searc=Intent(this@Showlist,com.example.groceryapp.search::class.java)
+        if(FirebaseAuth.getInstance().currentUser==null)
+        {
+            val inten=Intent(this@Showlist,SIGNIN::class.java)
+//            inten.putExtra("isFromDynamicLink", true)
+
+           startActivity(inten)
+            finish()
+        }
+    code= intent.getStringExtra("data").toString()
+if(code=="reg") {
+    handlingdynamiclink()
+
+}
+        search = findViewById(R.id.imageView5)
+        search.setOnClickListener {
+            val searc = Intent(this@Showlist, com.example.groceryapp.search::class.java)
             startActivity(searc)
         }
         framelayouts = findViewById(R.id.framelayout)
@@ -55,10 +91,6 @@ search=findViewById(R.id.imageView5)
         detailslist = arrayListOf<listdetails>()
         recy = findViewById(R.id.recyclerView);
         getdatas()
-
-
-
-
 
 
 //val data= ArrayList<_root_ide_package_.com.example.groceryapp.DatabaseModel>()
@@ -108,64 +140,59 @@ search=findViewById(R.id.imageView5)
         //for currently login person data assing to me part
         var id: String = ""
         val data2: String = ""
-        val listdetails:listdetails=listdetails()
-        datalist=ArrayList()
-Log.d("profile",FirebaseAuth.getInstance().currentUser?.photoUrl.toString())
+        val listdetails: listdetails = listdetails()
+        datalist = ArrayList()
+        Log.d("profile", FirebaseAuth.getInstance().currentUser?.photoUrl.toString())
 
         FirebaseDatabase.getInstance().getReference("grocerylist").child("listbasicinfo")
 
             .get()
             .addOnCompleteListener {
-                if(it.isSuccessful)
-                {
-                    it.result.children.forEach { children->
-                        Log.d("key",children.key.toString())
+                if (it.isSuccessful) {
+                    it.result.children.forEach { children ->
+                        Log.d("key", children.key.toString())
 
                         children.child("members").children.forEach { member ->
-                            if(member.child("uid").value.toString()==FirebaseAuth.getInstance().uid.toString())
-                            {
-                                id=children.key.toString()
-                                Log.d("testing",id)
-                               FirebaseDatabase.getInstance().getReference("grocerylist").child("listbasicinfo").child(id).addValueEventListener(object:ValueEventListener
-                                {
-                                    override fun onDataChange(snapshot: DataSnapshot) {
-                                        if(snapshot.exists())
-                                        {
-                                          val data2=snapshot.getValue(listbasicinfo::class.java)
+                            if (member.child("uid").value.toString() == FirebaseAuth.getInstance().uid.toString()) {
+                                id = children.key.toString()
+                                Log.d("testing", id)
+                                FirebaseDatabase.getInstance().getReference("grocerylist")
+                                    .child("listbasicinfo").child(id)
+                                    .addValueEventListener(object : ValueEventListener {
+                                        override fun onDataChange(snapshot: DataSnapshot) {
+                                            if (snapshot.exists()) {
+                                                val data2 =
+                                                    snapshot.getValue(listbasicinfo::class.java)
 
-                                           datalist.add(data2!!)
+                                                datalist.add(data2!!)
 
-                                            if(snapshot.hasChildren())
-                                            {
-                                                for(item in snapshot.child("listdetails").children)
-                                                {
-                                                    val data=item.getValue(listdetails::class.java)
-                                                    detailslist.add(data!!)
+                                                if (snapshot.hasChildren()) {
+                                                    for (item in snapshot.child("listdetails").children) {
+                                                        val data =
+                                                            item.getValue(listdetails::class.java)
+                                                        detailslist.add(data!!)
+                                                    }
+                                                    Log.d("testing", detailslist.toString())
+                                                } else {
+                                                    Log.d("testing", "o child")
                                                 }
-                                                Log.d("testing",detailslist.toString())
+                                            } else {
+                                                Log.d("error", "error")
                                             }
-                                            else
-                                            {
-                                                Log.d("testing","o child")
-                                            }
+                                            adapt = adapter(this@Showlist, datalist)
+                                            recy.adapter = adapt
+                                            recy.layoutManager =
+                                                GridLayoutManager(applicationContext, 2)
+                                            //recy.setHasFixedSize(true)
+
                                         }
-                                        else
-                                        {
-                                            Log.d("error","error")
+
+
+                                        override fun onCancelled(error: DatabaseError) {
+                                            TODO("Not yet implemented")
                                         }
-                                        adapt= adapter(this@Showlist,datalist)
-                                        recy.adapter=adapt
-                                        recy.layoutManager=GridLayoutManager(applicationContext,2)
-                                        //recy.setHasFixedSize(true)
 
-                                    }
-
-
-                                    override fun onCancelled(error: DatabaseError) {
-                                        TODO("Not yet implemented")
-                                    }
-
-                                })
+                                    })
 
                             }
 
@@ -177,11 +204,24 @@ Log.d("profile",FirebaseAuth.getInstance().currentUser?.photoUrl.toString())
             }
 
 
+    }
 
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun handlingdynamiclink() {
+        FirebaseDynamicLinks.getInstance().getDynamicLink(intent).addOnSuccessListener {
+            if (it != null) {
+                val id = it.link?.getQueryParameter("id")
+                Log.d("ids",id.toString())
+                if(id!=null)
+                {
 
-
-
-
+                    val member=member(FirebaseAuth.getInstance().uid.toString(),"Editor",LocalDateTime.now().toString())
+                    FirebaseDatabase.getInstance().getReference("grocerylist").child("listbasicinfo").child(id).child("members").push().updateChildren(member.toMap()).addOnSuccessListener {
+                        Toast.makeText(this, "sucessfully added to your list", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }
     }
 }
 

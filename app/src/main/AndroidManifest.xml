@@ -30,19 +30,45 @@
         <activity
             android:name=".search"
             android:exported="false" />
-        <activity
-            android:name=".searchActivity"
-            android:exported="false"
-            android:label="@string/title_activity_search" />
+<!--        <activity-->
+<!--            android:name=".searchActivity"-->
+<!--            android:exported="false"-->
+<!--            android:label="@string/title_activity_search" />-->
         <activity
             android:name=".addelement"
             android:exported="false" />
         <activity
             android:name=".Showlist"
-            android:exported="false" />
+            android:exported="true">
+            <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
+
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <!-- the host should contain your domain. The pattern should be same as it's mentioned without any special char -->
+
+                <data
+                    android:host="abis.page.link"
+                    android:pathPrefix="/grocerylist"
+                    android:scheme="https" />
+            </intent-filter>
+
+
+        </activity>
+
+
+
+
         <activity
             android:name=".SIGNIN"
-            android:exported="false" />
+            android:exported="false" >
+        </activity>
         <activity
             android:name=".MainActivity"
             android:exported="true">

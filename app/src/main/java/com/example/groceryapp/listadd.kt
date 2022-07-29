@@ -32,6 +32,7 @@ supportActionBar?.title=""
         shareimage=findViewById(R.id.textView13)
         shareimage.setOnClickListener {
 val intents=Intent(this,share::class.java)
+            intents.putExtra("title",titles)
             startActivity(intents)
         }
         icon=findViewById(R.id.textView15)
